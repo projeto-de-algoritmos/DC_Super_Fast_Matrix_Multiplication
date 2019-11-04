@@ -46,20 +46,19 @@ int lengthController(string &str1, string &str2) {
 }
 
 string DecimalToBinary(long long int number) { 
-    string result = ""; 
     if (number <= 0) 
         return "0";
     else { 
+        string result;
+        result.reserve(64 - __builtin_clzll(number));
         int i = 0; 
         while (number > 0) {    
-            stringstream ss; 
-            ss<<(number&1); 
-            result = ss.str() + result; 
-            number = number / 2; 
+            result.push_back((number&1)+'0');
+            number /= 2; 
             i++; 
         } 
-        return result; 
-          
+        reverse(result.begin(), result.end());
+        return result;      
     } 
 } 
 
@@ -173,8 +172,9 @@ void* calcular_rapido(void* v) {
         const clock_t tempo = clock();
         calcular_matriz_rapido(A, B, C);
         qtd_fast.push_back(float(clock () - tempo) / CLOCKS_PER_SEC);
+        printf("Karatsuba + Strassen: Cálculo com %d dígitos finalizado em %.3lf segundos.\n", x, qtd_fast[qtd_fast.size()-1]);
     }
-    pthread_exit ( NULL ) ;
+    pthread_exit(NULL) ;
 }
 
 void* calcular_devagar(void* v) {
@@ -199,8 +199,9 @@ void* calcular_devagar(void* v) {
         const clock_t tempo = clock();
         calcular_matriz_devagar(A, B, C);
         qtd_naive.push_back(float(clock () - tempo) / CLOCKS_PER_SEC);
+        printf("Naive: Cálculo com %d dígitos finalizado em %.3lf segundos.\n", x, qtd_naive[qtd_naive.size()-1]);
     }
-    pthread_exit ( NULL ) ;
+    pthread_exit(NULL);
 }
 
 int main() {
@@ -229,7 +230,7 @@ int main() {
     plt::xlabel("Quantidade de digitos");
     plt::ylabel("Tempo (s)");
     plt::named_plot("Karatsuba + Strassen", x, qtd_fast);
-    plt::named_plot("Naive (paralelo)",x, qtd_naive);
+    plt::named_plot("Naive",x, qtd_naive);
     plt::title("Diferenca entre algoritmos");
     plt::legend();
     plt::show();
