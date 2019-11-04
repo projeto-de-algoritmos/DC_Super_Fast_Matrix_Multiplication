@@ -3,8 +3,6 @@
 #include <pthread.h>
 #include <ctime>
 
-// g++ projeto.cpp -std=c++11 -O3 -lpthread -I/usr/include/python2.7 -lpython2.7 -o projeto
-
 namespace plt = matplotlibcpp;
 using namespace std;
 int qtd;
@@ -105,9 +103,9 @@ string multiplicar_rapido(string X, string Y) { // O(n¹·)
     string Yl = Y.substr(0, metade); 
     string Yr = Y.substr(metade); 
 
-    string P1 = multiplicar_rapido(Xl, Yl); 
-    string P2 = multiplicar_rapido(Xr, Yr); 
-    string P3 = multiplicar_rapido(somar(Xl, Xr), somar(Yl, Yr)); 
+    const string P1 = multiplicar_rapido(Xl, Yl); 
+    const string P2 = multiplicar_rapido(Xr, Yr); 
+    const string P3 = multiplicar_rapido(somar(Xl, Xr), somar(Yl, Yr)); 
       
     // return added string version 
     return somar(somar(MakeShifting(P1, 2*(n-metade)),P2),MakeShifting(subtrair(P3,somar(P1,P2)), n-(metade))); 
@@ -158,27 +156,18 @@ void* calcular_rapido(void* v) {
     mt19937_64 mt(rd());
 
     uniform_int_distribution<int> numeros(48, 49);
-    string A[2][2], B[2][2], C[2][2];
 
-    for(int x = jump; x < qtd; x+=jump) {
-        for(int i = 0; i < 2; ++i)
-            for(int j = 0; j < 2; ++j) {
-                string s(x,48);
+    for(int x = jump; x <= qtd; x+=jump) {
+        string A[2][2], B[2][2], C[2][2];
+        for(int i = 2; i--; )
+            for(int j = 2; j--; ) {
+                A[i][j].reserve(x);
+                B[i][j].reserve(x);
 
-                for(int k = 0; k < x; ++k)
-                    s[k] = numeros(mt);
-                
-                A[i][j] = s;
-            }
-        
-        for(int i = 0; i < 2; ++i)
-            for(int j = 0; j < 2; ++j) {
-                string s(x,48);
-
-                for(int k = 0; k < x; ++k)
-                    s[k] = numeros(mt);
-                
-                B[i][j] = s;
+                for(int k = x; k--; ) {
+                    A[i][j].push_back(numeros(mt));
+                    B[i][j].push_back(numeros(mt));                    
+                }
             }
 
         const clock_t tempo = clock();
@@ -193,29 +182,18 @@ void* calcular_devagar(void* v) {
     mt19937_64 mt(rd());
 
     uniform_int_distribution<int> numeros(48, 49);
-    string A[2][2], B[2][2];
 
-    for(int x = jump; x < qtd; x+=jump) {
-        string C[2][2];
+    for(int x = jump; x <= qtd; x+=jump) {
+        string A[2][2], B[2][2], C[2][2];
+        for(int i = 2; i--; )
+            for(int j = 2; j--; ) {
+                A[i][j].reserve(x);
+                B[i][j].reserve(x);
 
-        for(int i = 0; i < 2; ++i)
-            for(int j = 0; j < 2; ++j) {
-                string s(x,48);
-
-                for(int k = 0; k < x; ++k)
-                    s[k] = numeros(mt);
-                
-                A[i][j] = s;
-            }
-        
-        for(int i = 0; i < 2; ++i)
-            for(int j = 0; j < 2; ++j) {
-                string s(x,48);
-
-                for(int k = 0; k < x; ++k)
-                    s[k] = numeros(mt);
-                
-                B[i][j] = s;
+                for(int k = x; k--; ) {
+                    A[i][j].push_back(numeros(mt));
+                    B[i][j].push_back(numeros(mt));                    
+                }
             }
 
         const clock_t tempo = clock();
@@ -227,27 +205,26 @@ void* calcular_devagar(void* v) {
 
 int main() {
     printf("Insira a quantidade máxima de dígitos: ");
-    qtd=500;
-    //scanf(" %d", &qtd);
+    scanf(" %d", &qtd);
 
-    jump = qtd/50;
+    jump = qtd/10;
 
-    while(qtd < 1 || qtd > 10000) {
-        printf("A quantidade deve estar entre 1 e 10000: ");
+    while(qtd < 10 || qtd > 10000) {
+        printf("A quantidade deve estar entre 10 e 10000: ");
         scanf(" %d", &qtd);
     }
 
-    for(int i = jump; i < qtd; i+=jump)
+    for(int i = jump; i <= qtd; i+=jump)
         x.push_back(i);
     
     pthread_t id, id2;
 
-    pthread_create (&id , NULL ,calcular_rapido, NULL) ;
-    pthread_create (&id2 , NULL , calcular_devagar, NULL);
+    pthread_create (&id, NULL, calcular_rapido, NULL) ;
+    pthread_create (&id2, NULL, calcular_devagar, NULL);
 
     pthread_join(id, NULL);
     pthread_join(id2, NULL);
-    /*
+
     plt::figure_size(1200, 780);
     plt::xlabel("Quantidade de digitos");
     plt::ylabel("Tempo (s)");
@@ -256,5 +233,5 @@ int main() {
     plt::title("Diferenca entre algoritmos");
     plt::legend();
     plt::show();
-    */
+
 }
