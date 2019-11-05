@@ -12,14 +12,21 @@
 O software deste repositório usa <b>Karatsuba + Strassen</b> para calcular multiplicação de matrizes.
 
 ## Screenshots
-(Adicionar)
+![primeira tela](img/primeira_tela.png)
+
+![fazendo calculos](img/calculos.png)
+
+![resultado](img/resultados.png)
 
 ## Instalação 
 **Linguagem**: C++<br>
+É necessário ter o matplotlib instalado, para fazer isso, utilize o seguinte comando:
 
 ```bash
-    $ (Adicionar dependências)
+    $ sudo apt-get install python-matplotlib python-numpy python2.7-dev
 ```
+
+Quaisquer dúvidas sobre essa instalação, clique [aqui](https://github.com/lava/matplotlib-cpp).
 
 ## Uso
 
@@ -39,4 +46,7 @@ Para executar o código, digite:
 
 ## Outros
 
-(Adicionar)
+É feito uma comparação entre duas maneiras de se calcular multiplicação de matriz:
+
+- Usando métodos de multiplicação e multiplicação de matrizes padrão (Naive).
+- Usando método Karatsuba de multiplicação e Strassen de multiplicação de matrizes (Karatsuba + Strassen).
